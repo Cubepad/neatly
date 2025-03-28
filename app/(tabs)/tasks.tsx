@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, AnimatedFAB } from "react-native-paper";
 import AppHeader from "@/src/components/AppHeader.tsx";
-import NoteCard from "@/src/components/NoteCard";
+import TaskCard from "@/src/components/TaskCard";
 
-export default function TabOneScreen() {
+export default function TasksScreen() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isExtended, setIsExtended] = useState(true);
   const theme = useTheme();
@@ -21,22 +21,26 @@ export default function TabOneScreen() {
       <AppHeader />
       <ScrollView style={styles.container} onScroll={onScroll}>
         {Array.from({ length: 5 }).map((_, index) => (
-          <NoteCard
+          <TaskCard
             key={index}
-            title="Workflow Project Concept"
-            content="Discussed project timeline, assigned roles, and set next meeting date."
-            lastEdited="2 days ago"
-            tags={["Meet-20-Jul", "Workflow", "Figma"]}
+            title={`Task ${index + 1}`}
+            description="Complete the assigned work and review progress."
+            dueDate="Tomorrow"
+            priority={index % 2 === 0 ? "High" : "Normal"} // (Remove this line since priority is not a defined prop)
+            completed={false} // Default value for now
+            onToggleComplete={() => {}} // Placeholder function
+            onDelete={() => {}} // Placeholder function
           />
         ))}
+
       </ScrollView>
       <AnimatedFAB
         icon="plus"
-        label="Create Note"
+        label="New Task"
         extended={isExtended}
         style={styles.fab}
         onPress={() => {
-          // Implement action when FAB is pressed
+          // Navigate to add new task screen
         }}
       />
     </View>
