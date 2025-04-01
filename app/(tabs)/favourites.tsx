@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import { ScrollView, StyleSheet, View } from "react-native";
 import { useTheme, AnimatedFAB } from "react-native-paper";
 import AppHeader from "@/src/components/AppHeader.tsx";
-import TaskCard from "@/src/components/TaskCard";
+import NoteCard from "@/src/components/NoteCard";
 
-export default function TasksScreen() {
+const FavoritesScreen: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [isExtended, setIsExtended] = useState(true);
   const theme = useTheme();
@@ -21,31 +21,27 @@ export default function TasksScreen() {
       <AppHeader />
       <ScrollView style={styles.container} contentContainerStyle={{ paddingBottom: 10 }} onScroll={onScroll}>
         {Array.from({ length: 5 }).map((_, index) => (
-          <TaskCard
+          <NoteCard
             key={index}
-            title={`Task ${index + 1}`}
-            description="Complete the assigned work and review progress."
-            dueDate="Tomorrow"
-            priority={index % 2 === 0 ? "High" : "Normal"} 
-            completed={false} // Default value for now
-            onToggleComplete={() => {}} // Placeholder function
-            onDelete={() => {}} // Placeholder function
+            title="Design Concept"
+            content="Updated favorite design layout for the app"
+            lastEdited="1 day ago"
+            tags={["Design", "UI", "Figma"]}
           />
         ))}
-
       </ScrollView>
       <AnimatedFAB
         icon="plus"
-        label="New Task"
+        label="Create Note"
         extended={isExtended}
         style={styles.fab}
         onPress={() => {
-          // Navigate to add new task screen
+          // Implement action when FAB is pressed (e.g., open a modal to create a note)
         }}
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -58,3 +54,5 @@ const styles = StyleSheet.create({
     bottom: 16,
   },
 });
+
+export default FavoritesScreen;

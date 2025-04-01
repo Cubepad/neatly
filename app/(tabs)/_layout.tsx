@@ -51,7 +51,7 @@ function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
           <Text
             style={[
               styles.labelText,
-              { color: focused ? theme.colors.primary : theme.colors.onSurfaceVariant, fontWeight: 'normal' },
+              { color: focused ? theme.colors.primary : theme.colors.onSurfaceVariant},
             ]}
           >
             {label}
@@ -59,7 +59,7 @@ function CustomTabBar({ state, descriptors, navigation }: CustomTabBarProps) {
         );
       }}
       shifting={false}
-      style={[styles.bottomNavigation, { backgroundColor: theme.colors.surface }]}
+      style={[styles.bottomNavigation, { backgroundColor: theme.colors.elevation.level2 }]}
       activeIndicatorStyle={{
         backgroundColor: theme.colors.secondaryContainer,
         height: 36,
@@ -75,7 +75,7 @@ export default function TabLayout() {
   // Set navigation bar color on mount and theme change
   useEffect(() => {
     if (Platform.OS === 'android') {
-      NavigationBar.setBackgroundColorAsync(theme.colors.surface);
+      NavigationBar.setBackgroundColorAsync(theme.colors.elevation.level2);
     }
   }, [theme]);
 
@@ -116,13 +116,13 @@ export default function TabLayout() {
         />
 
         <Tabs.Screen
-          name="archive"
+          name="favourites"
           options={{
-            title: "Archive",
+            title: "Favourites",
             tabBarIcon: ({ color, focused }) => (
               <MaterialCommunityIcons
                 size={24}
-                name={focused ? "archive" : "archive-outline"} // Filled when active
+                name={focused ? "star" : "star-outline"} // Filled when active
                 color={color}
               />
             ),
@@ -146,5 +146,6 @@ const styles = StyleSheet.create({
   labelText: {
     fontSize: 12,
     textAlign: 'center',
+    fontFamily: "Inter_500Medium",
   },
 });

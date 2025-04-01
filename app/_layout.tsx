@@ -1,35 +1,72 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { PaperProvider, MD3DarkTheme, MD3LightTheme } from "react-native-paper";
-import { useFonts, Inter_400Regular, Inter_600SemiBold } from "@expo-google-fonts/inter";
+import {
+  useFonts,
+  Inter_100Thin,
+  Inter_200ExtraLight,
+  Inter_300Light,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+  Inter_800ExtraBold,
+  Inter_900Black,
+} from "@expo-google-fonts/inter";
+
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react"; // Import useMemo
 import { useColorScheme } from "@/hooks/useColorScheme";
 import "react-native-reanimated";
+import * as SystemUI from 'expo-system-ui'; // Import expo-system-ui
 
+// Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
   const [loaded, error] = useFonts({
+    Inter_100Thin,
+    Inter_200ExtraLight,
+    Inter_300Light,
     Inter_400Regular,
+    Inter_500Medium,
     Inter_600SemiBold,
+    Inter_700Bold,
+    Inter_800ExtraBold,
+    Inter_900Black,
   });
 
-  useEffect(() => {
-    if (loaded || error) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded, error]);
+  // Define typography styles using loaded fonts
+  const typography = {
+    displayLarge: { fontFamily: "Inter_900Black", fontWeight: "900" as const, fontSize: 57 },
+    displayMedium: { fontFamily: "Inter_800ExtraBold", fontWeight: "800" as const, fontSize: 45 },
+    displaySmall: { fontFamily: "Inter_700Bold", fontWeight: "700" as const, fontSize: 36 },
+    headlineLarge: { fontFamily: "Inter_700Bold", fontWeight: "700" as const, fontSize: 32 },
+    headlineMedium: { fontFamily: "Inter_600SemiBold", fontWeight: "600" as const, fontSize: 28 },
+    headlineSmall: { fontFamily: "Inter_500Medium", fontWeight: "500" as const, fontSize: 24 },
+    titleLarge: { fontFamily: "Inter_600SemiBold", fontWeight: "600" as const, fontSize: 22 },
+    titleMedium: { fontFamily: "Inter_500Medium", fontWeight: "500" as const, fontSize: 16 },
+    titleSmall: { fontFamily: "Inter_400Regular", fontWeight: "400" as const, fontSize: 14 },
+    labelLarge: { fontFamily: "Inter_600SemiBold", fontWeight: "600" as const, fontSize: 14 },
+    labelMedium: { fontFamily: "Inter_500Medium", fontWeight: "500" as const, fontSize: 12 },
+    labelSmall: { fontFamily: "Inter_400Regular", fontWeight: "400" as const, fontSize: 11 },
+    bodyLarge: { fontFamily: "Inter_400Regular", fontWeight: "400" as const, fontSize: 16 },
+    bodyMedium: { fontFamily: "Inter_400Regular", fontWeight: "400" as const, fontSize: 14 },
+    bodySmall: { fontFamily: "Inter_300Light", fontWeight: "300" as const, fontSize: 12 },
+  };
+  
 
-  if (!loaded && !error) {
-    return null;
-  }
-
+  // Define React Native Paper Light Theme
   const lightColorScheme = {
     ...MD3LightTheme,
-    roundness: 5,
+    roundness: 4,
+    listItem: {
+      title: { fontFamily: "Inter_500Medium", fontWeight: "500" },
+      description: { fontFamily: "Inter_400Regular", fontWeight: "400" },
+    },
+    fonts: { ...MD3LightTheme.fonts, ...typography },
     colors: {
       primary: "rgb(0, 95, 175)",
       onPrimary: "rgb(255, 255, 255)",
@@ -47,7 +84,7 @@ export default function RootLayout() {
       onError: "rgb(255, 255, 255)",
       errorContainer: "rgb(255, 218, 214)",
       onErrorContainer: "rgb(65, 0, 2)",
-      background: "rgb(253, 252, 255)",
+      background: "rgb(253, 252, 255)", // Light background
       onBackground: "rgb(26, 28, 30)",
       surface: "rgb(253, 252, 255)",
       onSurface: "rgb(26, 28, 30)",
@@ -74,9 +111,11 @@ export default function RootLayout() {
     },
   };
 
+  // Define React Native Paper Dark Theme
   const darkColorScheme = {
     ...MD3DarkTheme,
-    roundness: 5,
+    roundness: 4,
+    fonts: { ...MD3DarkTheme.fonts, ...typography },
     colors: {
       primary: "rgb(165, 200, 255)",
       onPrimary: "rgb(0, 49, 95)",
@@ -94,7 +133,7 @@ export default function RootLayout() {
       onError: "rgb(105, 0, 5)",
       errorContainer: "rgb(147, 0, 10)",
       onErrorContainer: "rgb(255, 180, 171)",
-      background: "rgb(26, 28, 30)",
+      background: "rgb(26, 28, 30)", // Dark background
       onBackground: "rgb(227, 226, 230)",
       surface: "rgb(26, 28, 30)",
       onSurface: "rgb(227, 226, 230)",
@@ -121,15 +160,67 @@ export default function RootLayout() {
     },
   };
 
+  // Select the correct Paper theme based on the device's color scheme
   const paperTheme = colorScheme === "dark" ? darkColorScheme : lightColorScheme;
 
+  // --- FIX: Create React Navigation theme aligned with Paper theme ---
+  const navigationTheme = useMemo(() => {
+    const baseNavTheme = colorScheme === 'dark' ? DarkTheme : DefaultTheme;
+    return {
+      ...baseNavTheme,
+      colors: {
+        ...baseNavTheme.colors,
+        // Crucially, use the background color from the Paper theme
+        background: paperTheme.colors.background,
+        // Align other colors for consistency (optional but recommended)
+        card: paperTheme.colors.surface, // Usually surface or background
+        text: paperTheme.colors.onSurface,
+        primary: paperTheme.colors.primary,
+        border: paperTheme.colors.outlineVariant, // or outline
+      },
+    };
+  }, [colorScheme, paperTheme]);
+  // --- END FIX ---
+
+  // Hide splash screen once fonts are loaded (or an error occurs)
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  // --- FIX: Set system UI background color ---
+  // This helps prevent flashes during startup and transitions (esp. Android)
+  useEffect(() => {
+    SystemUI.setBackgroundColorAsync(paperTheme.colors.background);
+  }, [paperTheme.colors.background]); // Re-run if the theme background changes
+  // --- END FIX ---
+
+
+  // Prevent rendering until fonts are loaded (show splash screen until then)
+  if (!loaded && !error) {
+    return null;
+  }
+
+  // Render the main application layout
   return (
-    <ThemeProvider value={colorScheme === "light" ? DarkTheme : DefaultTheme}>
+    // Use the aligned navigation theme for React Navigation
+    <ThemeProvider value={navigationTheme}>
+      {/* Use the Paper theme for React Native Paper components */}
       <PaperProvider theme={paperTheme}>
-        <Stack>
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            // Optional: Explicitly set card style background as a fallback
+            // cardStyle: { backgroundColor: paperTheme.colors.background },
+          }}
+        >
+          {/* Define your screens */}
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
           <Stack.Screen name="+not-found" />
+          <Stack.Screen name="settings" options={{ headerShown: false, title: 'Settings' }} />
         </Stack>
+        {/* Set status bar style based on the theme */}
         <StatusBar style={colorScheme === "dark" ? "light" : "dark"} />
       </PaperProvider>
     </ThemeProvider>

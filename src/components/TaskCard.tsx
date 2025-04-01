@@ -33,7 +33,6 @@ const TaskCard: React.FC<TaskCardProps> = ({
         right={(props) => (
           <Menu
             visible={menuVisible}
-            contentStyle={{ borderRadius: 10 }}
             onDismiss={() => setMenuVisible(false)}
             anchor={
               <IconButton
@@ -77,8 +76,8 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   title: {
-    fontWeight: "bold",
     marginBottom: 4,
+    fontSize: 20,
   },
   description: {
     marginBottom: 8,
